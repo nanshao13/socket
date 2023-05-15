@@ -1,20 +1,28 @@
-#pragma
+#pragma once
 
 #include <iostream>
+#include <unistd.h>
+#include <functional>
 
-void ADD()
+void serviceIO(int sockfd)
 {
-    while (true)
+    for (;;)
     {
-        std::cout << "add" << std::endl;
-    }
-}
-
-void SUB()
-{
-    while (true)
-    {
-        std::cout << "sub" << std::endl;
+        char buf[1024];
+        ssize_t n = read(sockfd, buf, sizeof(buf) - 1);
+        if (n > 0)
+        {
+            buf[n] = 0;
+        }
+        else if (n == 0)
+        {
+            LogMessage(NORMAL, "client exit");
+            break;
+        }
+        std::cout << "server read# " << buf << std::endl;
+        std::string response = buf;
+        response += "[server echo]";
+        write(sockfd, response.c_str(), response.size());
     }
 }
 
@@ -24,15 +32,16 @@ public:
     Task()
     {
     }
-    Task(std::function<void()> func)
-        : _callback(func)
+    Task(const std::function<void(int)> &callback, int sockfd)
+        : callback_(callback), sockfd_(sockfd)
     {
     }
     void operator()()
     {
-        _callback();
+        callback_(sockfd_);
     }
 
 private:
-    std::function<void()> _callback;
+    std::function<void(int)> callback_;
+    int sockfd_;
 };

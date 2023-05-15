@@ -3,50 +3,39 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-#include <pthread.h>
-#include "Task.hpp"
 #include "Thread.hpp"
 #include "Mutex.hpp"
+#include "Condition.hpp"
 #include "LockGuard.hpp"
 
+template <class T>
 class ThreadPool
 {
-public:
+private:
     ThreadPool(size_t threads)
     {
-        for (;;)
+        for (size_t i = 0; i < threads; ++i)
         {
             workers_.push_back(new Thread(start_routine, this));
         }
     }
     static void *start_routine(void *args)
     {
-        ThreadPool *threadpool = static_cast<ThreadPool *>(args);
-        Task t;
+        ThreadPool *tp = static_cast<ThreadPool *>(args);
+        T task;
         {
-            LockGuard ld(threadpool->mutex_);
-            while (threadpool->tasks_.empty())
+            LockGuard lock(tp->mutex_);
+            while (tp->tasks_.empty())
             {
-                pthread_cond_wait(&threadpool->cond_, &threadpool->mutex_.mutex_);
+                tp->condition_.wait(tp->mutex_);
             }
-            t = threadpool->pop();
+            task = tp->tasks_.front();
+            tp->tasks_.pop();
         }
-        t();
+        task();
+        return nullptr;
     }
-    void push(const Task &in)
-    {
-        LockGuard ld(mutex_);
-        tasks_.push(in);
-        pthread_cond_signal(&cond_);
-    }
-    Task pop()
-    {
-        Task t;
-        t = tasks_.front();
-        tasks_.pop();
-        return t;
-    }
-    ~ThreadPool() 
+    ~ThreadPool()
     {
         for (Thread *worker : workers_)
         {
@@ -54,9 +43,42 @@ public:
         }
     }
 
+public:
+    static ThreadPool<T> *getInstance(size_t threads)
+    {
+        if (instance == nullptr)
+        {
+            {
+                LockGuard lock(singleton_mutex);
+                if (instance == nullptr)
+                {
+                    instance = new ThreadPool(threads);
+                }
+            }
+        }
+        return instance;
+    }
+    void enqueue(const T &task)
+    {
+        {
+            LockGuard lock(mutex_);
+            tasks_.push(task);
+        }
+        condition_.notify_all();
+    }
+
 private:
     std::vector<Thread *> workers_;
-    std::queue<Task> tasks_;
+    std::queue<T> tasks_;
     Mutex mutex_;
-    pthread_cond_t cond_;
+    Condition condition_;
+    // 下面是为了实现单例（懒汉）模式
+    static ThreadPool<T> *instance;
+    static Mutex singleton_mutex;
 };
+
+template <class T>
+ThreadPool<T> *ThreadPool<T>::instance = nullptr;
+
+template <class T>
+Mutex ThreadPool<T>::singleton_mutex;

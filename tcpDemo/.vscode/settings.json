@@ -36,6 +36,8 @@
         "unordered_map": "cpp",
         "vector": "cpp",
         "fstream": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "condition_variable": "cpp",
+        "thread": "cpp"
     }
 }

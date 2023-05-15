@@ -6,6 +6,7 @@
 class Mutex
 {
 public:
+    pthread_mutex_t mutex_;
     Mutex()
     {
         pthread_mutex_init(&mutex_, nullptr);
@@ -22,5 +23,4 @@ public:
     {
         pthread_mutex_destroy(&mutex_);
     }
-    pthread_mutex_t mutex_;
 };

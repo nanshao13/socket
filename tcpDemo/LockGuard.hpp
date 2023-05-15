@@ -7,19 +7,16 @@
 class LockGuard
 {
 public:
-    LockGuard(const Mutex &mutex);
-    ~LockGuard();
+    LockGuard(Mutex &mutex)
+        : mutex_(&mutex)
+    {
+        mutex_->lock();
+    }
+    ~LockGuard()
+    {
+        mutex_->unlock();
+    }
+
 private:
-    Mutex mutex_;
+    Mutex *mutex_;
 };
-
-inline LockGuard::LockGuard(const Mutex &mutex)
-    : mutex_(mutex)
-{
-    mutex_.lock();
-}
-
-inline LockGuard::~LockGuard()
-{
-    mutex_.unlock();
-}
