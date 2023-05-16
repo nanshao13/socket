@@ -1,4 +1,5 @@
 #include "TcpServer.hpp"
+#include "Daemon.hpp"
 
 void usage(std::string proc)
 {
@@ -13,6 +14,7 @@ int main(int argc, char *args[])
         usage(args[0]);
         exit(UES_ERROR);
     }
+    daemonSelf();
     uint16_t port = atoi(args[1]);
     TcpServer ts(port);
     ts.run();

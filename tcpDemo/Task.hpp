@@ -24,6 +24,7 @@ void serviceIO(int sockfd)
         response += "[server echo]";
         write(sockfd, response.c_str(), response.size());
     }
+    close(sockfd);
 }
 
 class Task

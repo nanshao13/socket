@@ -33,20 +33,17 @@ public:
     }
     void run()
     {
-        for (;;)
+        struct sockaddr_in serverAddress;
+        serverAddress.sin_family = AF_INET;
+        serverAddress.sin_addr.s_addr = inet_addr(ip_.c_str());
+        serverAddress.sin_port = htons(port_);
+        if (connect(sockfd_, (struct sockaddr *)&serverAddress, sizeof serverAddress) == -1)
         {
-            struct sockaddr_in serverAddress;
-            serverAddress.sin_family = AF_INET;
-            serverAddress.sin_addr.s_addr = inet_addr(ip_.c_str());
-            serverAddress.sin_port = htons(port_);
-            if (connect(sockfd_, (struct sockaddr *)&serverAddress, sizeof serverAddress) == -1)
-            {
-                LogMessage(FATAL, "connect error");
-                exit(CREATE_SOCKET_ERROR);
-            }
-            LogMessage(NORMAL, "connect success");
-            serviceIO();
+            LogMessage(FATAL, "connect error");
+            exit(CREATE_SOCKET_ERROR);
         }
+        LogMessage(NORMAL, "connect success");
+        serviceIO();
     }
     void serviceIO()
     {
@@ -65,7 +62,7 @@ public:
             }
         }
     }
-    ~TcpClient() 
+    ~TcpClient()
     {
         if (sockfd_ != -1)
         {

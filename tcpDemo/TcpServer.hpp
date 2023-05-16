@@ -83,7 +83,6 @@ public:
              * 只能够同时进行一个通话
              */
             // serviceIO(sockfd);
-            // close(sockfd);
 
             /**
              * version 2
@@ -94,7 +93,6 @@ public:
             // {
             //     close(sockfd_);// 关闭多余的fd
             //     serviceIO(sockfd);
-            //     close(sockfd);
             //     exit(0);
             // }
             // close(sockfd);
@@ -132,7 +130,6 @@ public:
     //     pthread_detach(pthread_self());
     //     ThreadData *td = static_cast<ThreadData *>(args);
     //     serviceIO(td->sockfd_);
-    //     close(td->sockfd_);
     //     delete td;
     //     pthread_exit(nullptr);
     // }
