@@ -3,7 +3,7 @@
 
 void usage(std::string proc)
 {
-    std::cout << "usage:\n\t" << proc << " ip port\n";
+    std::cout << "usage:\n\t" << proc << " port\n";
 }
 
 int main(int argc, char *args[])
