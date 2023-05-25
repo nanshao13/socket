@@ -1,10 +1,10 @@
 cc=g++
 .PHONY:all
-all:tcpClient tcpServer
-tcpClient:tcpClient.cc
+all:calClient calServer
+calClient:calClient.cc
 	$(cc) -o $@ $^ -std=c++11 -ljsoncpp
-tcpServer:tcpServer.cc
+calServer:calServer.cc
 	$(cc) -o $@ $^ -std=c++11 -ljsoncpp -lpthread 
 .PHONY:clean
 clean:
-	rm -f tcpClient tcpServer
+	rm -f calClient calServer

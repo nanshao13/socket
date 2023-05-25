@@ -12,8 +12,7 @@
 #define LINE_SEP "\r\n"
 #define LINE_SEP_LEN strlen(LINE_SEP)
 
-// "length message\r\n"
-// 35 {"left":1,"operator":43,"right":2}\r\n
+// "length content\r\n"
 
 std::string enLength(const std::string &content)
 {
