@@ -2,14 +2,15 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
-class Util
-{
+class Util {
 public:
-    static bool readFile(const std::string &resource, std::string *output)
-    {
+    static bool readFile(const std::string &resource, std::string *output) {
         std::ifstream in(resource, std::ios::binary);
-        if (!in.is_open()) return false;
+        if (!in.is_open()) {
+            return false;
+        }
         in.seekg(0, std::ios::end);
         std::streampos fileSize = in.tellg();
         in.seekg(0, std::ios::beg);
